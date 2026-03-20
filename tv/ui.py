@@ -112,19 +112,12 @@ class TerminalVelocityUI:
         """
         Render the status of the players.
         """
-        print("Turn", turn_number, self.term.clear_eol)
+        # stats are at the side of the map
+        column = self.game.map_radius * 4 + 4
 
-        for player in self.game.players.values():
-            player_line = (
-                f"E{player.power_distribution[ENGINES] * '|':<3} "
-                f"S{player.power_distribution[SHIELDS] * '|':<3} "
-                f"L{player.power_distribution[LASERS] * '|':<3} "
-                f"C{player.cargo * '{}':<4} "
-                f"{player.hp}hp "
-                f"{player.score}$"
-                f"{self.term.clear_eol}"
-            )
+        print(self.term.move(0, column), "Turn", turn_number, self.term.clear_eol)
 
+        for idx, player in enumerate(self.game.players.values()):
             color = self.player_colors[player.name]
             if player.name in winner_names:
                 winner_message = " WINNER!! Press ctrl-c to quit"
@@ -133,7 +126,27 @@ class TerminalVelocityUI:
             else:
                 winner_message = ""
 
-            print(f"{color}{player_line} {player}{self.term.normal}{winner_message}{self.term.clear_eol}")
+            player_line = f"{player} {player.hp}hp {player.score}$ {self.term.clear_eol}"
+            stats_line = (
+                f"E{player.power_distribution[ENGINES] * '|':<3} "
+                f"S{player.power_distribution[SHIELDS] * '|':<3} "
+                f"L{player.power_distribution[LASERS] * '|':<3} "
+                f"C{player.cargo * '{}':<4} "
+            )
+
+            player_row = (idx + 1) * 2
+            stats_row = player_row + 1
+
+            print(
+                self.term.move(player_row, column),
+                color, player_line, self.term.normal,
+                winner_message, self.term.clear_eol,
+            )
+            print(
+                self.term.move(stats_row, column),
+                color, stats_line, self.term.normal,
+                self.term.clear_eol,
+            )
 
     @contextmanager
     def show(self):
