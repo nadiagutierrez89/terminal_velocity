@@ -102,7 +102,7 @@ class TerminalVelocityUI:
                     icon = "{}"
                     color = self.term.white
                 elif thing == HOME_BASE:
-                    icon = "[]"
+                    icon = "██"
                     color = self.term.white
 
                 row += f"{color}{icon}{self.term.normal}"
@@ -128,9 +128,9 @@ class TerminalVelocityUI:
 
             player_line = f"{player} {player.hp}hp {player.score}$ {self.term.clear_eol}"
             stats_line = (
-                f"E{player.power_distribution[ENGINES] * '|':<3} "
-                f"S{player.power_distribution[SHIELDS] * '|':<3} "
-                f"L{player.power_distribution[LASERS] * '|':<3} "
+                f"E{player.power_distribution[ENGINES] * '█':<3} "
+                f"S{player.power_distribution[SHIELDS] * '█':<3} "
+                f"L{player.power_distribution[LASERS] * '█':<3} "
                 f"C{player.cargo * '{}':<4} "
             )
 
