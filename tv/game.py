@@ -28,6 +28,8 @@ POWERED_SYSTEMS = (ENGINES, SHIELDS, LASERS)
 MAX_HP = 5
 MAX_POWER = 3
 MAX_CARGO = 2
+MINING_REWARD = 100
+PIRATING_REWARD = 0.1
 HOME_BASE_RADIUS = 2
 RADAR_RADIUS = 3
 ATTACK_RADIUS = 2
@@ -413,7 +415,7 @@ class TerminalVelocity:
                 else:
                     self.drop_asteroids(target_player.position, target_player.cargo)
 
-                    stolen_credits = int(target_player.credits / 10)
+                    stolen_credits = int(target_player.credits * PIRATING_REWARD)
 
                     target_player.position = None
                     target_player.cargo = 0
@@ -433,7 +435,7 @@ class TerminalVelocity:
         if player.cargo and player.position.distance_to(self.home_base) <= HOME_BASE_RADIUS:
             delivered_asteroids = player.cargo
 
-            player.credits += delivered_asteroids
+            player.credits += delivered_asteroids * MINING_REWARD
             player.cargo = 0
 
             if delivered_asteroids:
