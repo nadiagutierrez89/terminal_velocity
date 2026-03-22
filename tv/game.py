@@ -6,7 +6,7 @@ from collections import namedtuple
 from functools import lru_cache
 from itertools import product
 
-from tv.isolation import IsolatedBotLogic
+from tv.isolation import RemoteBotLogicClient
 
 # objects in radar
 SPACESHIP = "spaceship"
@@ -78,7 +78,7 @@ class Player:
         self.bot_type = bot_type
 
         if isolated:
-            self.bot_logic = IsolatedBotLogic(name, bot_type, isolated_turn_timeout)
+            self.bot_logic = RemoteBotLogicClient(bot_type, isolated_turn_timeout)
         else:
             self.bot_logic = Player.import_bot_logic(bot_type)
 
@@ -135,7 +135,7 @@ class TerminalVelocity:
                  ui=None, log_path=None, isolated=False, isolated_turn_timeout=0.1):
         # initialize players
         self.players = {
-            name: Player(name, bot_type, isolated=isolated, isolated_turn_timeout=isolated_turn_timeout)
+            name: Player(name, bot_type, isolated, isolated_turn_timeout)
             for name, bot_type in players_info.items()
         }
 
@@ -153,7 +153,6 @@ class TerminalVelocity:
         # execution parameters
         self.ui = ui
         self.isolated = isolated
-        self.isolated_turn_timeout = isolated_turn_timeout
 
         if self.ui:
             self.ui.initialize(self)
@@ -221,7 +220,9 @@ class TerminalVelocity:
             winners = None
 
             if self.isolated:
-                self.isolation_boot()
+                logging.info("starting isolated bots")
+                for player in self.players.values():
+                    player.bot_logic.start_bot_server()
 
             logging.info("initializing player bots logic")
             for player in self.players.values():
@@ -270,7 +271,9 @@ class TerminalVelocity:
                 self.ui.render(turn_number, winners)
         finally:
             if self.isolated:
-                self.isolation_cleanup()
+                logging.info("stopping isolated bots")
+                for player in self.players.values():
+                    player.bot_logic.stop_bot_server()
 
         return winners
 
@@ -466,17 +469,3 @@ class TerminalVelocity:
                     and drop_position not in self.home_base_positions_cache:
                 self.asteroids.add(drop_position)
                 count -= 1
-
-    def isolation_boot(self):
-        """
-        Start the isolated bot logic for all players.
-        """
-        for player in self.players.values():
-            player.start_bot()
-
-    def isolation_cleanup(self):
-        """
-        Stop the isolated bot logic for all players.
-        """
-        for player in self.players.values():
-            player.stop_bot()
