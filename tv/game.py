@@ -340,6 +340,10 @@ class TerminalVelocity:
 
         if action:
             logging.info("%s requested action: %s", player, action)
+            radar_data = self.get_radar_contacts(player)
+            leaderboard = {p.name: p.credits for p in self.players.values()}
+            logging.info("Radar contacts: %s", radar_data)
+            logging.info("Leaderboard: %s", leaderboard)
         else:
             return False, action
 

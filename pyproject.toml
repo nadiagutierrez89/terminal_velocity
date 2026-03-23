@@ -3,7 +3,7 @@ name = "terminal-velocity"
 version = "0.1.0"
 description = "A small game for a PyCamp. Build your own bot, play against bots from other people :)"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = "==3.11.15"
 dependencies = [
     "blessings>=1.7",
     "click>=8.3.1",
